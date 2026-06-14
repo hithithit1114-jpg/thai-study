@@ -452,7 +452,7 @@
 <header>
   <span>🇹🇭</span>
   <h1>タイ語学習アプリ</h1>
-  <div class="timer-chip" id="timer-chip" style="display:none">⏱ 0:00</div>
+  <div class="timer-chip" id="timer-chip">⏱ 0:00</div>
 </header>
 
 <nav>
@@ -1348,11 +1348,6 @@ function showScreen(name) {
   document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
   document.getElementById(name).classList.add('active');
   event.target.classList.add('active');
-  if (name === 'flash' || name === 'quiz') {
-    startStudyTimer();
-  } else {
-    pauseStudyTimer();
-  }
   if (name === 'review') renderReviewList();
   if (name === 'home') renderHome();
 }
@@ -1512,22 +1507,13 @@ let dailyGoalMinutes = parseInt(localStorage.getItem('thai_daily_goal') || '10')
 
 function startStudyTimer() {
   if (studyTimer) return;
-  const chip = document.getElementById('timer-chip');
-  if (chip) chip.style.display = 'block';
   studyTimer = setInterval(() => {
     sessionElapsed++;
     updateTimerChip();
     if (sessionElapsed % 30 === 0) flushStudyTime();
+    // ホーム画面表示中はリアルタイム更新
+    if (document.getElementById('home').classList.contains('active')) renderHome();
   }, 1000);
-}
-
-function pauseStudyTimer() {
-  if (!studyTimer) return;
-  clearInterval(studyTimer);
-  studyTimer = null;
-  flushStudyTime();
-  const chip = document.getElementById('timer-chip');
-  if (chip) chip.style.display = 'none';
 }
 
 function flushStudyTime() {
@@ -1628,6 +1614,7 @@ renderCats();
 renderCard();
 updateNavBadge();
 renderHome();
+startStudyTimer(); // アプリを開いた瞬間から学習時間を計測
 </script>
 </body>
 </html>
