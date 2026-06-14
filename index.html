@@ -526,6 +526,23 @@
 </head>
 <body>
 
+<!-- パスワード画面 -->
+<div id="pw-screen" style="position:fixed;inset:0;background:var(--white);z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px;">
+  <div style="width:100%;max-width:360px;text-align:center;">
+    <div style="font-size:2.5rem;margin-bottom:8px">🇹🇭</div>
+    <div style="font-size:1.1rem;font-weight:bold;letter-spacing:0.1em;margin-bottom:4px">タイ語学習アプリ</div>
+    <div style="font-size:0.8rem;color:var(--gray-dark);margin-bottom:32px;letter-spacing:0.05em">THAI STUDY APP</div>
+    <input id="pw-input" type="password" placeholder="パスワードを入力"
+      style="width:100%;padding:14px;border:1px solid var(--black);font-size:1rem;outline:none;margin-bottom:10px;letter-spacing:0.1em;"
+      onkeydown="if(event.key==='Enter')checkPw()">
+    <div id="pw-error" style="color:var(--red);font-size:0.82rem;margin-bottom:10px;display:none">パスワードが違います</div>
+    <button onclick="checkPw()"
+      style="width:100%;padding:14px;background:var(--black);color:var(--white);border:none;font-size:0.9rem;font-weight:bold;letter-spacing:0.1em;cursor:pointer;">
+      入る
+    </button>
+  </div>
+</div>
+
 <header>
   <span>🇹🇭</span>
   <h1>タイ語学習アプリ</h1>
@@ -1668,6 +1685,22 @@ function showVoiceError(btn) {
   msg.textContent = '音声を再生できませんでした';
   btn.insertAdjacentElement('afterend', msg);
   setTimeout(() => msg.remove(), 3000);
+}
+
+// ===== パスワード認証 =====
+function checkPw() {
+  const input = document.getElementById('pw-input').value;
+  if (input === 'ilovethai2606') {
+    sessionStorage.setItem('thai_auth', '1');
+    document.getElementById('pw-screen').style.display = 'none';
+  } else {
+    document.getElementById('pw-error').style.display = 'block';
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-input').focus();
+  }
+}
+if (sessionStorage.getItem('thai_auth') === '1') {
+  document.getElementById('pw-screen').style.display = 'none';
 }
 
 // ===== フレーズデータ =====
