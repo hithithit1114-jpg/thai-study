@@ -32,19 +32,25 @@
     display: flex;
     background: var(--white);
     border-bottom: 1px solid var(--black);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
   }
+  nav::-webkit-scrollbar { display: none; }
   nav button {
-    flex: 1;
-    padding: 14px;
+    flex: none;
+    min-width: 64px;
+    padding: 12px 10px;
     border: none;
     background: none;
-    font-size: 0.9rem;
+    font-size: 0.78rem;
     font-weight: bold;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.02em;
     cursor: pointer;
     color: var(--gray-dark);
     border-bottom: 2px solid transparent;
     transition: all 0.15s;
+    white-space: nowrap;
   }
   nav button.active { color: var(--black); border-bottom-color: var(--black); }
   nav button:hover { color: var(--black); background: var(--gray-light); }
@@ -385,6 +391,77 @@
     vertical-align: middle;
   }
 
+  /* フレーズ画面 */
+  .phrase-cats { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+  .phrase-cat-btn {
+    padding: 8px 14px; border: 1px solid var(--gray-mid);
+    background: var(--white); font-size: 0.82rem; font-weight: bold;
+    cursor: pointer; color: var(--black); transition: all 0.15s;
+  }
+  .phrase-cat-btn.selected { background: var(--black); color: var(--white); border-color: var(--black); }
+  .phrase-cat-btn.emergency { border-color: var(--red); color: var(--red); }
+  .phrase-cat-btn.emergency.selected { background: var(--red); color: var(--white); }
+  .phrase-item {
+    padding: 14px 16px; border-bottom: 1px solid var(--gray-light);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .phrase-item:first-child { border-top: 1px solid var(--gray-light); }
+  .phrase-item.emergency-item { background: #fff5f5; }
+  .phrase-jp { font-size: 0.85rem; font-weight: bold; color: var(--black); margin-bottom: 3px; }
+  .phrase-thai { font-size: 1.3rem; color: var(--black); margin-bottom: 2px; }
+  .phrase-kana { font-size: 0.75rem; color: var(--red); }
+  .phrase-texts { flex: 1; }
+  .sos-banner {
+    background: var(--red); color: var(--white);
+    padding: 12px 16px; text-align: center;
+    font-weight: bold; font-size: 0.9rem; letter-spacing: 0.1em;
+    margin-bottom: 12px;
+  }
+
+  /* 練習画面 */
+  .practice-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .practice-card-btn {
+    border: 1px solid var(--black); padding: 20px 10px;
+    background: var(--white); cursor: pointer; text-align: center;
+    transition: all 0.15s;
+  }
+  .practice-card-btn:hover { background: var(--gray-light); }
+  .practice-card-btn .p-icon { font-size: 2rem; margin-bottom: 6px; }
+  .practice-card-btn .p-title { font-size: 0.85rem; font-weight: bold; }
+  .practice-card-btn .p-desc { font-size: 0.72rem; color: var(--gray-dark); margin-top: 4px; }
+  .btn-back-practice {
+    background: none; border: 1px solid var(--gray-mid);
+    padding: 8px 16px; font-size: 0.82rem; font-weight: bold;
+    cursor: pointer; margin-bottom: 16px; color: var(--black);
+  }
+
+  /* タイ文字練習 */
+  .char-display {
+    background: var(--gray-light); border: 1px solid var(--black);
+    text-align: center; padding: 24px; margin-bottom: 16px;
+  }
+  .char-big { font-size: 5rem; color: var(--black); line-height: 1; }
+  .char-name { font-size: 0.85rem; color: var(--gray-dark); margin-top: 8px; }
+  .char-example { font-size: 0.9rem; color: var(--black); margin-top: 4px; }
+
+  /* 声調練習 */
+  .tone-card {
+    border: 1px solid var(--gray-mid); padding: 16px; margin-bottom: 10px;
+  }
+  .tone-name { font-size: 1rem; font-weight: bold; margin-bottom: 6px; }
+  .tone-mark { font-size: 1.5rem; color: var(--red); font-weight: bold; }
+  .tone-example-row { display: flex; align-items: center; gap: 12px; margin-top: 8px; }
+  .tone-thai { font-size: 2rem; }
+  .tone-desc { font-size: 0.8rem; color: var(--gray-dark); }
+
+  /* 数字クイズ */
+  .number-display {
+    background: var(--gray-light); border: 1px solid var(--black);
+    text-align: center; padding: 32px; margin-bottom: 16px;
+  }
+  .number-big { font-size: 3.5rem; font-weight: bold; color: var(--black); }
+  .number-unit { font-size: 1rem; color: var(--gray-dark); margin-top: 4px; }
+
   /* スマホ向けボタン大型化 */
   .btn-known, .btn-unknown {
     min-height: 52px;
@@ -459,6 +536,8 @@
   <button onclick="showScreen('home')">🏠 ホーム</button>
   <button class="active" onclick="showScreen('flash')">📇 カード</button>
   <button onclick="showScreen('quiz')">📝 クイズ</button>
+  <button onclick="showScreen('phrase')">🗣 フレーズ</button>
+  <button onclick="showScreen('practice')">🎮 練習</button>
   <button onclick="showScreen('review')">📌 復習<span id="nav-review-badge" class="review-badge" style="display:none"></span></button>
 </nav>
 
@@ -612,6 +691,95 @@
       <div class="result-msg" id="res-msg"></div>
       <button class="btn-retry" onclick="resetQuiz()">もう一度チャレンジ</button>
     </div>
+  </div>
+</div>
+
+<!-- PHRASE SCREEN -->
+<div id="phrase" class="screen">
+  <div id="phrase-main">
+    <section><h2>場面別フレーズ</h2></section>
+    <div class="phrase-cats" id="phrase-cats"></div>
+    <div id="phrase-list"></div>
+  </div>
+</div>
+
+<!-- PRACTICE SCREEN -->
+<div id="practice" class="screen">
+  <!-- メニュー -->
+  <div id="practice-menu">
+    <section><h2>練習メニュー</h2></section>
+    <div class="practice-menu">
+      <button class="practice-card-btn" onclick="showPractice('chars')">
+        <div class="p-icon">🔤</div>
+        <div class="p-title">タイ文字を読もう</div>
+        <div class="p-desc">子音24文字を覚える</div>
+      </button>
+      <button class="practice-card-btn" onclick="showPractice('tones')">
+        <div class="p-icon">🎵</div>
+        <div class="p-title">声調を覚えよう</div>
+        <div class="p-desc">5声調の違いを学ぶ</div>
+      </button>
+      <button class="practice-card-btn" onclick="showPractice('numbers')">
+        <div class="p-icon">🔢</div>
+        <div class="p-title">数字・金額クイズ</div>
+        <div class="p-desc">バーツの読み方を練習</div>
+      </button>
+      <button class="practice-card-btn" onclick="showPractice('charquiz')">
+        <div class="p-icon">❓</div>
+        <div class="p-title">文字クイズ</div>
+        <div class="p-desc">文字の読み方を当てよう</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- タイ文字一覧 -->
+  <div id="practice-chars" style="display:none">
+    <button class="btn-back-practice" onclick="showPractice('menu')">← メニューに戻る</button>
+    <section><h2>タイ語子音 24文字</h2></section>
+    <div id="chars-list"></div>
+  </div>
+
+  <!-- 声調説明 -->
+  <div id="practice-tones" style="display:none">
+    <button class="btn-back-practice" onclick="showPractice('menu')">← メニューに戻る</button>
+    <section><h2>タイ語の5声調</h2></section>
+    <p style="font-size:0.82rem;color:var(--gray-dark);margin-bottom:12px">タイ語は音の高低（声調）で意味が変わります。同じ「カー」でも5通りの意味があります！</p>
+    <div id="tones-list"></div>
+  </div>
+
+  <!-- 数字クイズ -->
+  <div id="practice-numbers" style="display:none">
+    <button class="btn-back-practice" onclick="showPractice('menu')">← メニューに戻る</button>
+    <section><h2>数字・金額クイズ</h2></section>
+    <div class="quiz-score">
+      <div class="score-item"><div class="score-num" id="nq-correct">0</div><div class="score-label">正解</div></div>
+      <div class="score-item"><div class="score-num" id="nq-wrong">0</div><div class="score-label">不正解</div></div>
+      <div class="score-item"><div class="score-num" id="nq-total">0</div><div class="score-label">問題数</div></div>
+    </div>
+    <div class="number-display">
+      <div class="number-big" id="nq-number">－</div>
+      <div class="number-unit" id="nq-unit">バーツ</div>
+    </div>
+    <div class="options-grid" id="nq-options"></div>
+    <div class="feedback" id="nq-feedback" style="display:none"></div>
+    <button class="btn-next-q" id="nq-next" style="display:none" onclick="nextNumberQ()">次の問題へ</button>
+  </div>
+
+  <!-- 文字クイズ -->
+  <div id="practice-charquiz" style="display:none">
+    <button class="btn-back-practice" onclick="showPractice('menu')">← メニューに戻る</button>
+    <section><h2>文字クイズ</h2></section>
+    <div class="quiz-score">
+      <div class="score-item"><div class="score-num" id="cq-correct">0</div><div class="score-label">正解</div></div>
+      <div class="score-item"><div class="score-num" id="cq-wrong">0</div><div class="score-label">不正解</div></div>
+    </div>
+    <div class="char-display">
+      <div class="char-big" id="cq-char">ก</div>
+      <div class="char-name" id="cq-name"></div>
+    </div>
+    <div class="options-grid" id="cq-options"></div>
+    <div class="feedback" id="cq-feedback" style="display:none"></div>
+    <button class="btn-next-q" id="cq-next" style="display:none" onclick="nextCharQ()">次の問題へ</button>
   </div>
 </div>
 
@@ -1350,6 +1518,8 @@ function showScreen(name) {
   event.target.classList.add('active');
   if (name === 'review') renderReviewList();
   if (name === 'home') renderHome();
+  if (name === 'phrase') renderPhraseScreen();
+  if (name === 'practice') showPractice('menu');
 }
 
 function renderReviewList() {
@@ -1498,6 +1668,328 @@ function showVoiceError(btn) {
   msg.textContent = '音声を再生できませんでした';
   btn.insertAdjacentElement('afterend', msg);
   setTimeout(() => msg.remove(), 3000);
+}
+
+// ===== フレーズデータ =====
+const PHRASES = {
+  "🆘 緊急": [
+    { jp:"助けてください！", thai:"ช่วยด้วย!", kana:"チュアイ ドゥアイ！" },
+    { jp:"救急車を呼んでください", thai:"เรียกรถพยาบาลด้วย", kana:"リアック ロット パヤーバーン ドゥアイ" },
+    { jp:"警察を呼んでください", thai:"เรียกตำรวจด้วย", kana:"リアック タムルアット ドゥアイ" },
+    { jp:"病院に連れて行ってください", thai:"พาไปโรงพยาบาลด้วย", kana:"パー パイ ローン パヤーバーン ドゥアイ" },
+    { jp:"けが人がいます", thai:"มีคนบาดเจ็บ", kana:"ミー コン バーット チェップ" },
+    { jp:"火事！", thai:"ไฟไหม้!", kana:"ファイ マーイ！" },
+    { jp:"泥棒！", thai:"ขโมย!", kana:"カモーイ！" },
+    { jp:"道に迷いました", thai:"ฉันหลงทาง", kana:"チャン ロン ターン" },
+    { jp:"パスポートをなくしました", thai:"ทำหนังสือเดินทางหาย", kana:"タム ナンスー ドーン ターン ハーイ" },
+    { jp:"～アレルギーがあります", thai:"แพ้...ครับ/ค่ะ", kana:"ペー...クラップ/カ" },
+    { jp:"日本大使館に連絡してください", thai:"ช่วยติดต่อสถานทูตญี่ปุ่นด้วย", kana:"チュアイ ティット トー サターン トゥート イープン ドゥアイ" },
+  ],
+  "🚕 タクシー": [
+    { jp:"〜に行ってください", thai:"ไปที่...ครับ", kana:"パイ ティー...クラップ" },
+    { jp:"メーターをつけてください", thai:"เปิดมิเตอร์ด้วยครับ", kana:"プート ミーター ドゥアイ クラップ" },
+    { jp:"ここで止めてください", thai:"หยุดที่นี่ครับ", kana:"ユット ティー ニー クラップ" },
+    { jp:"急いでください", thai:"รีบหน่อยนะครับ", kana:"リープ ノーイ ナ クラップ" },
+    { jp:"いくらですか？", thai:"เท่าไหร่ครับ", kana:"タオライ クラップ" },
+    { jp:"お釣りは結構です", thai:"ไม่ต้องทอนครับ", kana:"マイ トーン トーン クラップ" },
+    { jp:"右に曲がってください", thai:"เลี้ยวขวาครับ", kana:"リアオ クワー クラップ" },
+    { jp:"左に曲がってください", thai:"เลี้ยวซ้ายครับ", kana:"リアオ サーイ クラップ" },
+    { jp:"まっすぐ行ってください", thai:"ตรงไปครับ", kana:"トロン パイ クラップ" },
+    { jp:"渋滞を避けてください", thai:"เลี่ยงรถติดหน่อยได้ไหมครับ", kana:"リアン ロット ティット ノーイ ダイ マイ クラップ" },
+  ],
+  "🏥 病院": [
+    { jp:"〜が痛いです", thai:"ปวด...ครับ", kana:"プアット...クラップ" },
+    { jp:"熱があります（38度）", thai:"มีไข้ครับ สามสิบแปดองศา", kana:"ミー カイ クラップ サームスィップ ペート オンサー" },
+    { jp:"～のアレルギーがあります", thai:"แพ้...ครับ", kana:"ペー...クラップ" },
+    { jp:"いつ薬を飲みますか？", thai:"กินยาตอนไหนครับ", kana:"ギン ヤー トーン ナイ クラップ" },
+    { jp:"入院が必要ですか？", thai:"ต้องนอนโรงพยาบาลไหมครับ", kana:"トーン ノーン ローン パヤーバーン マイ クラップ" },
+    { jp:"英語を話せる医師はいますか？", thai:"มีหมอพูดภาษาอังกฤษได้ไหมครับ", kana:"ミー モー プート パーサー アンクリット ダイ マイ クラップ" },
+    { jp:"領収書をください（保険用）", thai:"ขอใบเสร็จด้วยครับ", kana:"コー バイ セット ドゥアイ クラップ" },
+    { jp:"保険は使えますか？", thai:"ใช้ประกันได้ไหมครับ", kana:"チャイ プラガン ダイ マイ クラップ" },
+    { jp:"処方箋をください", thai:"ขอใบสั่งยาด้วยครับ", kana:"コー バイ サン ヤー ドゥアイ クラップ" },
+  ],
+  "🛒 屋台・市場": [
+    { jp:"これは何ですか？", thai:"อันนี้คืออะไรครับ", kana:"アン ニー クー アライ クラップ" },
+    { jp:"試食できますか？", thai:"ลองชิมได้ไหมครับ", kana:"ローン チム ダイ マイ クラップ" },
+    { jp:"辛くしないでください", thai:"ขอแบบไม่เผ็ดครับ", kana:"コー ベープ マイ ペット クラップ" },
+    { jp:"パクチーなしでお願いします", thai:"ไม่ใส่ผักชีนะครับ", kana:"マイ サイ パックチー ナ クラップ" },
+    { jp:"少し安くなりますか？", thai:"ลดราคาหน่อยได้ไหมครับ", kana:"ロット ラーカー ノーイ ダイ マイ クラップ" },
+    { jp:"2つください", thai:"ขอสองอันครับ", kana:"コー ソーン アン クラップ" },
+    { jp:"袋に入れてください", thai:"ห่อด้วยนะครับ", kana:"ホー ドゥアイ ナ クラップ" },
+    { jp:"新鮮ですか？", thai:"สดไหมครับ", kana:"ソット マイ クラップ" },
+    { jp:"持ち帰りでお願いします", thai:"ขอห่อกลับบ้านด้วยครับ", kana:"コー ホー グラップ バーン ドゥアイ クラップ" },
+  ],
+  "🏢 職場": [
+    { jp:"遅刻してすみません", thai:"ขอโทษที่มาสายครับ", kana:"コートート ティー マー サーイ クラップ" },
+    { jp:"会議は何時ですか？", thai:"ประชุมกี่โมงครับ", kana:"プラチュム ギー モーン クラップ" },
+    { jp:"メールを送ってください", thai:"ส่งอีเมลมาด้วยครับ", kana:"ソン イーメーン マー ドゥアイ クラップ" },
+    { jp:"もう一度説明してください", thai:"ช่วยอธิบายอีกทีได้ไหมครับ", kana:"チュアイ アティバーイ イーク ティー ダイ マイ クラップ" },
+    { jp:"今日は半休を取ります", thai:"วันนี้ขอลาครึ่งวันครับ", kana:"ワン ニー コー ラー クルン ワン クラップ" },
+    { jp:"よろしくお願いします", thai:"ขอฝากเนื้อฝากตัวด้วยนะครับ", kana:"コー ファーク ヌア ファーク トゥア ドゥアイ ナ クラップ" },
+    { jp:"一緒にランチいかがですか？", thai:"ไปกินข้าวกลางวันด้วยกันไหมครับ", kana:"パイ ギン カーオ グラーン ワン ドゥアイ ガン マイ クラップ" },
+    { jp:"レポートはいつまでですか？", thai:"รายงานส่งภายในเมื่อไหร่ครับ", kana:"ラーイ ンガーン ソン パーイ ナイ ムアライ クラップ" },
+    { jp:"お先に失礼します", thai:"กลับก่อนนะครับ", kana:"グラップ ゴーン ナ クラップ" },
+  ],
+  "🏨 ホテル": [
+    { jp:"チェックインをお願いします", thai:"เช็คอินครับ", kana:"チェック イン クラップ" },
+    { jp:"チェックアウトをお願いします", thai:"เช็คเอาท์ครับ", kana:"チェック アオ クラップ" },
+    { jp:"部屋の鍵をください", thai:"ขอกุญแจห้องด้วยครับ", kana:"コー グンチェー ホーン ドゥアイ クラップ" },
+    { jp:"エアコンが壊れています", thai:"แอร์เสียครับ", kana:"エア シア クラップ" },
+    { jp:"タオルを追加してください", thai:"ขอผ้าเช็ดตัวเพิ่มครับ", kana:"コー ファー チェット トゥア プーム クラップ" },
+    { jp:"WiFiのパスワードは？", thai:"รหัส WiFi คืออะไรครับ", kana:"ラハット ワイ ファイ クー アライ クラップ" },
+    { jp:"レイトチェックアウトできますか？", thai:"เช็คเอาท์สายได้ไหมครับ", kana:"チェック アオ サーイ ダイ マイ クラップ" },
+    { jp:"タクシーを呼んでもらえますか？", thai:"ช่วยเรียกแท็กซี่ให้หน่อยครับ", kana:"チュアイ リアック テクシー ハイ ノーイ クラップ" },
+    { jp:"荷物を預かってもらえますか？", thai:"ฝากกระเป๋าไว้ก่อนได้ไหมครับ", kana:"ファーク グラパオ ワイ ゴーン ダイ マイ クラップ" },
+  ],
+};
+
+// ===== タイ文字データ =====
+const THAI_CHARS = [
+  { char:"ก", sound:"G/K音", reading:"コー ガイ", example:"ไก่", exMeaning:"鶏" },
+  { char:"ข", sound:"Kh音（強）", reading:"コー カイ", example:"ไข่", exMeaning:"卵" },
+  { char:"ค", sound:"Kh音", reading:"コー クワーイ", example:"ควาย", exMeaning:"水牛" },
+  { char:"ง", sound:"Ng音", reading:"ンゴー ングー", example:"งู", exMeaning:"蛇" },
+  { char:"จ", sound:"J/Ch音", reading:"チョー チャーン", example:"จาน", exMeaning:"皿" },
+  { char:"ช", sound:"Ch音", reading:"チョー チャーン", example:"ช้าง", exMeaning:"象" },
+  { char:"ซ", sound:"S音", reading:"ソー ソー", example:"โซ่", exMeaning:"鎖" },
+  { char:"ด", sound:"D音", reading:"ドー デック", example:"เด็ก", exMeaning:"子ども" },
+  { char:"ต", sound:"T音", reading:"トー タオ", example:"เต่า", exMeaning:"亀" },
+  { char:"น", sound:"N音", reading:"ノー ヌー", example:"หนู", exMeaning:"ネズミ" },
+  { char:"บ", sound:"B音", reading:"ボー バイマーイ", example:"ใบไม้", exMeaning:"葉っぱ" },
+  { char:"ป", sound:"P音（強）", reading:"ポー プラー", example:"ปลา", exMeaning:"魚" },
+  { char:"ผ", sound:"Ph音（強）", reading:"ポー プン", example:"ผึ้ง", exMeaning:"蜂" },
+  { char:"พ", sound:"Ph音", reading:"ポー パーン", example:"พาน", exMeaning:"お盆" },
+  { char:"ฝ", sound:"F音（強）", reading:"フォー ファー", example:"ฝา", exMeaning:"蓋" },
+  { char:"ฟ", sound:"F音", reading:"フォー ファン", example:"ฟัน", exMeaning:"歯" },
+  { char:"ม", sound:"M音", reading:"モー มาー", example:"ม้า", exMeaning:"馬" },
+  { char:"ย", sound:"Y音", reading:"ヨー ヤック", example:"ยักษ์", exMeaning:"鬼" },
+  { char:"ร", sound:"R音", reading:"ロー ルア", example:"เรือ", exMeaning:"船" },
+  { char:"ล", sound:"L音", reading:"ロー リン", example:"ลิง", exMeaning:"猿" },
+  { char:"ว", sound:"W/V音", reading:"ウォー ウェーン", example:"แหวน", exMeaning:"指輪" },
+  { char:"ส", sound:"S音", reading:"ソー スア", example:"เสือ", exMeaning:"虎" },
+  { char:"ห", sound:"H音", reading:"ホー ヒープ", example:"หีบ", exMeaning:"箱" },
+  { char:"อ", sound:"母音記号（無音）", reading:"オー アーン", example:"อ่าง", exMeaning:"洗面台" },
+];
+
+// ===== 声調データ =====
+const TONES = [
+  { name:"サーマン調（平声）", nameThai:"สามัญ", mark:"マークなし", markEx:"กา", desc:"中くらいの音で平らに発音。一番よく使う声調。", example:"กา", kana:"カー（普通）", meaning:"カラス", tip:"「か」を普通に言う感じ" },
+  { name:"エーク調（低声）", nameThai:"เอก", mark:"่（マイエーク）", markEx:"ก่า", desc:"低めの音から少し下げる。", example:"ข่า", kana:"カー↓（低く）", meaning:"ガランガル（香辛料）", tip:"低くぼそぼそと言う感じ" },
+  { name:"トー調（下降調）", nameThai:"โท", mark:"้（マイトー）", markEx:"ก้า", desc:"高い音から急激に下げる。", example:"ข้า", kana:"カー↘（急降下）", meaning:"僕・私（古語）", tip:"驚いて「えっ！」と言う感じ" },
+  { name:"トリー調（上昇調）", nameThai:"ตรี", mark:"๊（マイトリー）", markEx:"ก๊า", desc:"低い音から高く上げる。", example:"ค้า", kana:"カー↗（上昇）", meaning:"商売", tip:"疑問形で「そう？」と言う感じ" },
+  { name:"チャットワー調（高声）", nameThai:"จัตวา", mark:"๋（マイチャットワー）", markEx:"ก๋า", desc:"高い音で保ちながら少し上げる。", example:"หา", kana:"カー↑（高く）", meaning:"探す", tip:"高い声で「はーい！」と言う感じ" },
+];
+
+// ===== 数字クイズデータ =====
+const NUMBER_QUIZ = [
+  { num:7, display:"7", unit:"", answer:"เจ็ด", options:["เจ็ด","แปด","หก","เก้า"] },
+  { num:15, display:"15", unit:"", answer:"สิบห้า", options:["สิบห้า","สิบสอง","ยี่สิบ","สิบเก้า"] },
+  { num:20, display:"20", unit:"", answer:"ยี่สิบ", options:["ยี่สิบ","สิบ","สาม","สี่สิบ"] },
+  { num:50, display:"50", unit:"バーツ", answer:"ห้าสิบบาท", options:["ห้าสิบบาท","หกสิบบาท","สี่สิบบาท","เจ็ดสิบบาท"] },
+  { num:100, display:"100", unit:"バーツ", answer:"ร้อยบาท", options:["ร้อยบาท","พันบาท","สิบบาท","สองร้อยบาท"] },
+  { num:150, display:"150", unit:"バーツ", answer:"ร้อยห้าสิบบาท", options:["ร้อยห้าสิบบาท","ร้อยสิบบาท","สองร้อยบาท","ห้าสิบบาท"] },
+  { num:200, display:"200", unit:"バーツ", answer:"สองร้อยบาท", options:["สองร้อยบาท","ร้อยบาท","สามร้อยบาท","ยี่สิบบาท"] },
+  { num:500, display:"500", unit:"バーツ", answer:"ห้าร้อยบาท", options:["ห้าร้อยบาท","ร้อยบาท","พันบาท","สองร้อยห้าสิบบาท"] },
+  { num:1000, display:"1,000", unit:"バーツ", answer:"พันบาท", options:["พันบาท","ร้อยบาท","หมื่นบาท","สองพันบาท"] },
+  { num:1500, display:"1,500", unit:"バーツ", answer:"พันห้าร้อยบาท", options:["พันห้าร้อยบาท","ห้าร้อยบาท","พันบาท","สองพันบาท"] },
+  { num:2500, display:"2,500", unit:"バーツ", answer:"สองพันห้าร้อยบาท", options:["สองพันห้าร้อยบาท","พันบาท","ห้าพันบาท","สองพันบาท"] },
+  { num:10000, display:"10,000", unit:"バーツ", answer:"หมื่นบาท", options:["หมื่นบาท","พันบาท","แสนบาท","สองหมื่นบาท"] },
+];
+
+// ===== フレーズ画面 =====
+let currentPhrasecat = "🆘 緊急";
+
+function renderPhraseScreen() {
+  const cats = document.getElementById('phrase-cats');
+  cats.innerHTML = Object.keys(PHRASES).map(c => `
+    <button class="phrase-cat-btn ${c === currentPhrasecat ? 'selected' : ''} ${c === '🆘 緊急' ? 'emergency' : ''}"
+      onclick="setPhrasecat('${c.replace(/'/g,"&#39;")}')">${c}</button>
+  `).join('');
+  renderPhraseList();
+}
+
+function setPhrasecat(cat) {
+  currentPhrasecat = cat;
+  renderPhraseScreen();
+}
+
+function renderPhraseList() {
+  const list = document.getElementById('phrase-list');
+  const phrases = PHRASES[currentPhrasecat] || [];
+  const isEmergency = currentPhrasecat === '🆘 緊急';
+  list.innerHTML = (isEmergency ? '<div class="sos-banner">🆘 緊急時にすぐ使えるフレーズ</div>' : '') +
+    phrases.map((p, i) => `
+      <div class="phrase-item ${isEmergency ? 'emergency-item' : ''}">
+        <div class="phrase-texts">
+          <div class="phrase-jp">${p.jp}</div>
+          <div class="phrase-thai">${p.thai}</div>
+          <div class="phrase-kana">${p.kana}</div>
+        </div>
+        <button class="speak-btn" id="ph-speak-${i}"
+          onclick="speakThai('${p.thai.replace(/'/g,"&#39;")}','ph-speak-${i}')">🔊</button>
+      </div>
+    `).join('');
+}
+
+// ===== 練習画面 =====
+function showPractice(mode) {
+  ['practice-menu','practice-chars','practice-tones','practice-numbers','practice-charquiz'].forEach(id => {
+    document.getElementById(id).style.display = 'none';
+  });
+  if (mode === 'menu') {
+    document.getElementById('practice-menu').style.display = 'block';
+  } else if (mode === 'chars') {
+    document.getElementById('practice-chars').style.display = 'block';
+    renderCharsList();
+  } else if (mode === 'tones') {
+    document.getElementById('practice-tones').style.display = 'block';
+    renderTonesList();
+  } else if (mode === 'numbers') {
+    document.getElementById('practice-numbers').style.display = 'block';
+    nqCorrect = 0; nqWrong = 0; nqTotal = 0;
+    updateNQScore();
+    nextNumberQ();
+  } else if (mode === 'charquiz') {
+    document.getElementById('practice-charquiz').style.display = 'block';
+    cqCorrect = 0; cqWrong = 0;
+    document.getElementById('cq-correct').textContent = 0;
+    document.getElementById('cq-wrong').textContent = 0;
+    nextCharQ();
+  }
+}
+
+function renderCharsList() {
+  document.getElementById('chars-list').innerHTML = THAI_CHARS.map(c => `
+    <div class="phrase-item">
+      <div style="font-size:2.5rem;min-width:60px;text-align:center">${c.char}</div>
+      <div class="phrase-texts">
+        <div class="phrase-jp">${c.sound}　<span style="color:var(--red);font-size:0.8rem">${c.reading}</span></div>
+        <div style="font-size:0.82rem;color:var(--gray-dark)">例：${c.example}（${c.exMeaning}）</div>
+      </div>
+      <button class="speak-btn" id="ch-speak-${c.char}"
+        onclick="speakThai('${c.example}','ch-speak-${c.char}')">🔊</button>
+    </div>
+  `).join('');
+}
+
+function renderTonesList() {
+  const colors = ['#111','#0055cc','#cc5500','#009933','#cc0000'];
+  document.getElementById('tones-list').innerHTML = TONES.map((t, i) => `
+    <div class="tone-card" style="border-left:4px solid ${colors[i]}">
+      <div class="tone-name" style="color:${colors[i]}">${t.name} <span style="font-size:0.8rem;font-weight:normal;color:var(--gray-dark)">${t.nameThai}</span></div>
+      <div style="font-size:0.8rem;color:var(--gray-dark);margin-bottom:8px">${t.desc}</div>
+      <div class="tone-example-row">
+        <div>
+          <div style="font-size:0.7rem;color:var(--gray-dark)">声調記号</div>
+          <div class="tone-mark">${t.mark}</div>
+        </div>
+        <div>
+          <div style="font-size:0.7rem;color:var(--gray-dark)">例</div>
+          <div class="tone-thai">${t.example}</div>
+        </div>
+        <div>
+          <div style="font-size:0.7rem;color:var(--gray-dark)">読み方</div>
+          <div style="font-size:0.85rem;color:var(--red);font-weight:bold">${t.kana}</div>
+          <div style="font-size:0.75rem;color:var(--gray-dark)">${t.meaning}</div>
+        </div>
+        <button class="speak-btn" id="tone-speak-${i}"
+          onclick="speakThai('${t.example}','tone-speak-${i}')">🔊</button>
+      </div>
+      <div style="font-size:0.78rem;color:var(--black);background:var(--gray-light);padding:6px 8px;margin-top:8px">
+        💡 ${t.tip}
+      </div>
+    </div>
+  `).join('');
+}
+
+// 数字クイズ
+let nqCorrect = 0, nqWrong = 0, nqTotal = 0;
+let nqOrder = [], nqIdx = 0, nqAnswered = false;
+
+function updateNQScore() {
+  document.getElementById('nq-correct').textContent = nqCorrect;
+  document.getElementById('nq-wrong').textContent = nqWrong;
+  document.getElementById('nq-total').textContent = nqTotal;
+}
+
+function nextNumberQ() {
+  if (nqIdx >= nqOrder.length) {
+    nqOrder = shuffle([...Array(NUMBER_QUIZ.length).keys()]);
+    nqIdx = 0;
+  }
+  nqAnswered = false;
+  const q = NUMBER_QUIZ[nqOrder[nqIdx++]];
+  document.getElementById('nq-number').textContent = q.display;
+  document.getElementById('nq-unit').textContent = q.unit ? `（${q.unit}）` : '';
+  document.getElementById('nq-feedback').style.display = 'none';
+  document.getElementById('nq-next').style.display = 'none';
+  const opts = shuffle([...q.options]);
+  document.getElementById('nq-options').innerHTML = opts.map(o => `
+    <button class="option-btn" onclick="answerNQ(this,'${o.replace(/'/g,"&#39;")}','${q.answer.replace(/'/g,"&#39;")}')">${o}</button>
+  `).join('');
+}
+
+function answerNQ(btn, chosen, correct) {
+  if (nqAnswered) return;
+  nqAnswered = true; nqTotal++;
+  document.querySelectorAll('#nq-options .option-btn').forEach(b => {
+    b.disabled = true;
+    if (b.textContent === correct) b.classList.add('correct');
+  });
+  const fb = document.getElementById('nq-feedback');
+  if (chosen === correct) {
+    nqCorrect++; btn.classList.add('correct');
+    fb.className = 'feedback correct'; fb.textContent = '⭕ 正解！';
+  } else {
+    nqWrong++; btn.classList.add('wrong');
+    fb.className = 'feedback wrong'; fb.textContent = `❌ 不正解。正解は「${correct}」`;
+  }
+  fb.style.display = 'block';
+  updateNQScore();
+  document.getElementById('nq-next').style.display = 'block';
+}
+
+// 文字クイズ
+let cqCorrect = 0, cqWrong = 0;
+let cqOrder = [], cqIdx = 0, cqAnswered = false;
+
+function nextCharQ() {
+  if (cqIdx >= cqOrder.length) {
+    cqOrder = shuffle([...Array(THAI_CHARS.length).keys()]);
+    cqIdx = 0;
+  }
+  cqAnswered = false;
+  const q = THAI_CHARS[cqOrder[cqIdx++]];
+  document.getElementById('cq-char').textContent = q.char;
+  document.getElementById('cq-name').textContent = `例：${q.example}（${q.exMeaning}）`;
+  document.getElementById('cq-feedback').style.display = 'none';
+  document.getElementById('cq-next').style.display = 'none';
+  const wrongs = shuffle(THAI_CHARS.filter(c => c.char !== q.char)).slice(0, 3).map(c => c.sound);
+  const opts = shuffle([q.sound, ...wrongs]);
+  document.getElementById('cq-options').innerHTML = opts.map(o => `
+    <button class="option-btn" onclick="answerCQ(this,'${o.replace(/'/g,"&#39;")}','${q.sound.replace(/'/g,"&#39;")}')">${o}</button>
+  `).join('');
+}
+
+function answerCQ(btn, chosen, correct) {
+  if (cqAnswered) return;
+  cqAnswered = true;
+  document.querySelectorAll('#cq-options .option-btn').forEach(b => {
+    b.disabled = true;
+    if (b.textContent === correct) b.classList.add('correct');
+  });
+  const fb = document.getElementById('cq-feedback');
+  if (chosen === correct) {
+    cqCorrect++; btn.classList.add('correct');
+    fb.className = 'feedback correct'; fb.textContent = '⭕ 正解！';
+  } else {
+    cqWrong++; btn.classList.add('wrong');
+    fb.className = 'feedback wrong'; fb.textContent = `❌ 正解は「${correct}」`;
+  }
+  fb.style.display = 'block';
+  document.getElementById('cq-correct').textContent = cqCorrect;
+  document.getElementById('cq-wrong').textContent = cqWrong;
+  document.getElementById('cq-next').style.display = 'block';
 }
 
 // ===== 学習時間トラッキング =====
