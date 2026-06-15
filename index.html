@@ -1672,9 +1672,11 @@ function tryTTSFallbacks(text, btn, idx) {
   }
   const audio = new Audio(TTS_URLS[idx](text));
   currentAudio = audio;
-  audio.onended = () => { if (btn) btn.classList.remove('speaking'); currentAudio = null; };
-  audio.onerror = () => { currentAudio = null; tryTTSFallbacks(text, btn, idx + 1); };
-  audio.play().catch(() => { currentAudio = null; tryTTSFallbacks(text, btn, idx + 1); });
+  let handled = false;
+  const next = () => { if (handled) return; handled = true; currentAudio = null; tryTTSFallbacks(text, btn, idx + 1); };
+  audio.onended = () => { handled = true; if (btn) btn.classList.remove('speaking'); currentAudio = null; };
+  audio.onerror = () => next();
+  audio.play().catch(() => next());
 }
 
 function showVoiceError(btn) {
